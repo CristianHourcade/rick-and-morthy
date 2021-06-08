@@ -1,32 +1,17 @@
+import { useQuery } from "@apollo/client";
 import { useState } from "react";
+import { GET_CHARACTERS } from "../apollo/queries/characters";
 import { CardComponent } from "../component/CardComponent";
 import styles from "../styles/Home.module.css";
 
 export default function Home() {
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState<number>(1);
+  const { data } = useQuery(GET_CHARACTERS(page));
 
-  const mockData = [
-    {
-      name: "Rick Sanchez",
-      species: "Human",
-      image: "https://rickandmortyapi.com/api/character/avatar/1.jpeg",
-    },
-    {
-      name: "Morty Smith",
-      species: "Human",
-      image: "https://rickandmortyapi.com/api/character/avatar/2.jpeg",
-    },
-    {
-      name: "Summer Smith",
-      species: "Human",
-      image: "https://rickandmortyapi.com/api/character/avatar/3.jpeg",
-    },
-    {
-      name: "Beth Smith",
-      species: "Human",
-      image: "https://rickandmortyapi.com/api/character/avatar/4.jpeg",
-    },
-  ];
+  if(!data){
+    return 'loading';
+  }
+  const mockData = data.characters.results;
 
   return (
     <div className={styles.container}>
@@ -36,7 +21,7 @@ export default function Home() {
         </h1>
 
         <div className={styles.grid}>
-          {mockData.map((element) => {
+          {mockData.map((element, index) => {
             return <CardComponent character={element} />;
           })}
         </div>
@@ -51,7 +36,7 @@ export default function Home() {
                   onClick={() => {
                     setPage(index + 1);
                   }}
-                  className={page === index + 1 && "active"}
+                  className={(page === index + 1) && "active"}
                 >
                   {index + 1}
                 </a>
